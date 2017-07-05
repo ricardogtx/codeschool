@@ -13,6 +13,39 @@ from codeschool import models
 strptime = datetime.datetime.strptime
 
 
+class UserManager(BaseUserManager):
+
+    def _create_user(self, email, name, alias, role, school_id, password, **extra_fields):
+        """
+        Creates and saves a User with the given username, email and password.
+        """
+        if not email:
+            raise ValueError('The given email must be set')
+        email = self.normalize_email(email)
+        user = self.model(name=name, email=email, alias=alias, school_id=school_id,
+                          role=role, **extra_fields)
+        user.set_password(password)
+        user.save(using=self._db)
+        return user
+
+    def create_user(self, email, name, alias, role, school_id, password, **extra_fields):
+        extra_fields.setdefault('is_staff', False)
+        extra_fields.setdefault('is_superuser', False)
+        return self._create_user(email, name, alias, role, school_id, password, **extra_fields)
+
+    def create_superuser(self, email, name, alias, role, school_id, password, **extra_fields):
+        extra_fields.setdefault('is_staff', True)
+        extra_fields.setdefault('is_superuser', True)
+
+        if extra_fields.get('is_staff') is not True:
+            raise ValueError('Superuser must have is_staff=True.')
+        if extra_fields.get('is_superuser') is not True:
+            raise ValueError('Superuser must have is_superuser=True.')
+
+        return self._create_user(email, name, alias, role, school_id, password, **extra_fields)
+
+
+
 class User(AbstractBaseUser, PermissionsMixin):
     """
     Base user model.
@@ -59,7 +92,7 @@ class User(AbstractBaseUser, PermissionsMixin):
         )
     )
     role = models.IntegerField(
-        _('Main'),
+        _('Role'),
         choices=ROLE_CHOICES,
         default=ROLE_STUDENT,
         help_text=_(
@@ -86,7 +119,7 @@ class User(AbstractBaseUser, PermissionsMixin):
         default=timezone.now
     )
 
-    objects = BaseUserManager()
+    objects = UserManager()
 
     # Temporary properties defined for compatibility
     username = property(lambda x: x.alias)

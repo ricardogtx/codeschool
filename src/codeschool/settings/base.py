@@ -93,7 +93,7 @@ STATICFILES_FINDERS = [
 ]
 
 STATICFILES_DIRS = [
-    os.path.join(REPO_DIR, 'frontend', 'assets'),
+    os.path.join(REPO_DIR, 'frontend', 'static'),
 ]
 
 COLLECT_DIR = os.path.join(REPO_DIR, 'collect')

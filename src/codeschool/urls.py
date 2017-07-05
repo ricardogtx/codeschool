@@ -32,7 +32,7 @@ urlpatterns = [
     url(r'^api/', include(router.urls)),
     url(r'^admin/', include('wagtail.wagtailadmin.urls')),
     url(r'^', include('codeschool.core.users.urls', namespace='auth')),
-
+    url(r'^', include('password_reset.urls')),
 ]
 
 # Optional debug views
