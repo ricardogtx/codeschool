@@ -81,7 +81,6 @@ setup(
         'django-model-reference',
         'django-picklefield',
         'django-jsonfield',
-        'django-userena', 'django-guardian>=1.4.6',
         'django-ipware',
         'django-annoying',
         'django-extensions',

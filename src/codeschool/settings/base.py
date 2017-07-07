@@ -215,3 +215,6 @@ IS_RUNNING_TESTS = (
 )
 if IS_RUNNING_TESTS:
     print('Running tests and disabling sandboxed execution')
+
+EMAIL_BACKEND = 'django.core.mail.backends.filebased.EmailBackend'
+EMAIL_FILE_PATH = 'tmp/email-messages/'

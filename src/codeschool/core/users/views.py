@@ -12,6 +12,11 @@ from . import models
 from . import serializers
 from .forms import LoginForm, UserForm, ProfileForm
 
+from codeschool.core.users.models import Profile, User
+from django.core.mail import EmailMessage
+
+from django.urls import reverse
+
 
 #
 # REST endpoints
@@ -42,7 +47,7 @@ def logout(request):
 def current_user_profile(request):
     user = request.user
     profile = user.profile
-    name = profile.get_full_name_or_username()
+    name = profile
 
     context = dict(
         content_title=_('Profile: {name}').format(name=name),
@@ -54,12 +59,40 @@ def current_user_profile(request):
 
 @login_required
 def edit_profile(request):
-    raise NotImplementedError
+
+    ctx = login_context()
+
+    instance = Profile.objects.get(user=request.user)
+
+    ctx['profile_form'] = profile_form = ProfileForm(request.POST or None, instance=instance)
+
+    if request.method == 'POST':
+        if profile_form.is_valid():
+            with transaction.atomic():
+                profile_form.save()
+
+        redirect_url = request.GET.get('redirect', 'index')
+        return redirect(redirect_url)
+
+        # Redirect
+    else:
+        return render(request, 'users/profile-edit.jinja2', ctx)
 
 
 @login_required
 def change_password(request, pk):
-    raise NotImplementedError
+    user = User.objects.filter(pk=pk)
+    link = reverse('password_reset_recover')
+    email = EmailMessage(
+        'Alteracao de senha',
+        'Ola, se deseja alterar sua senha clique em { % url "password_reset_recover" % }',
+        'fazzolino29@gay.com',
+        [user[0].email],
+    )
+    email.send(fail_silently=False)
+    print(email.message())
+    redirect_url = request.GET.get('redirect', 'index')
+    return redirect(redirect_url)
 
 
 @login_required

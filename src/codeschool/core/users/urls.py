@@ -18,7 +18,7 @@ urlpatterns = [
         name='logout',
     ),
     url(
-        r'^auth/password/$',
+        r'^auth/password/(?P<pk>[0-9]+)/$',
         views.change_password,
         name='change-password',
     ),
